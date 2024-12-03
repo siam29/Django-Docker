@@ -19,7 +19,10 @@ class AccommodationImageInline(admin.TabularInline):
 
 @admin.register(Accommodation)
 class AccommodationAdmin(LeafletGeoAdmin):
-    list_display = ('id', 'title', 'country_code', 'bedroom_count', 'review_score', 'usd_rate', 'center', 'location', 'published', 'created_at', 'updated_at')
+    list_display = (
+        'id', 'title', 'country_code', 'bedroom_count', 'review_score', 
+        'usd_rate', 'center', 'location', 'published', 'created_at', 'updated_at'
+    )
     list_filter = ('published', 'location') 
     search_fields = ('title', 'country_code', 'location__title')
     ordering = ('-created_at',)
@@ -31,8 +34,11 @@ class AccommodationAdmin(LeafletGeoAdmin):
         Superusers see all properties.
         """
         qs = super().get_queryset(request)
+        
         if request.user.is_superuser:
-            return qs
+            return qs  # Superusers see all properties
+
+        # Non-superusers only see their own properties
         return qs.filter(user=request.user)
 
     def has_change_permission(self, request, obj=None):
@@ -50,6 +56,28 @@ class AccommodationAdmin(LeafletGeoAdmin):
         if obj is None:
             return True
         return obj.user == request.user or request.user.is_superuser
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Limit the user field dropdown to only show the current user or allow superusers to select any user.
+        """
+        form = super().get_form(request, obj, **kwargs)
+
+        # If the user is not a superuser, set the user field to the current user and disable the dropdown
+        if not request.user.is_superuser:
+            form.base_fields['user'].initial = request.user  # Pre-set the user to the current logged-in user
+            form.base_fields['user'].disabled = True  # Disable the dropdown to prevent changes
+
+        return form
+
+    def save_model(self, request, obj, form, change):
+        """
+        Automatically set the user field to the logged-in user for non-superusers.
+        """
+        if not request.user.is_superuser:
+            obj.user = request.user  # Automatically assign the logged-in user
+        obj.save()  # Save the object
+
 
 @admin.register(AccommodationImage)
 class AccommodationImageAdmin(admin.ModelAdmin):

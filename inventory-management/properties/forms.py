@@ -14,7 +14,6 @@ class CustomUserRegistrationForm(UserCreationForm):
         user = super().save(commit=False)
         if commit:
             user.save()
-            # Assign the user to the "Property Owners" group
             group = Group.objects.get(name="Property Owners")
             user.groups.add(group)
         return user
