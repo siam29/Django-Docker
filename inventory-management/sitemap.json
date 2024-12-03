@@ -1,0 +1,14 @@
+[
+    {
+        "Australia": "au",
+        "locations": [
+            {
+                "Hotel Book": "au/hotel-book"
+            }
+        ]
+    },
+    {
+        "Hotel Management": "sa",
+        "locations": []
+    }
+]
