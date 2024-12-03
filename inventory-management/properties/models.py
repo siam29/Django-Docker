@@ -8,29 +8,27 @@ from uuid import uuid4
 import os
 
 class Location(models.Model):
-    """
-    Location model for storing hierarchical geographic data.
-    """
-    id = models.CharField(max_length=20, primary_key=True)  # Unique ID
-    title = models.CharField(max_length=100)  # Location title
-    center = geomodels.PointField()  # Geospatial PointField for location center
+    
+    id = models.CharField(max_length=20, primary_key=True)  
+    title = models.CharField(max_length=100)  
+    center = geomodels.PointField()  
     parent = models.ForeignKey(
         'self',
         on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name='children'
-    )  # Self-referential foreign key for hierarchical structure
+    )  
     location_type = models.CharField(
         max_length=20,
-        choices=[('country', 'Country'), ('state', 'State'), ('city', 'City')],
+         choices=[('country', 'Country'), ('state', 'State'), ('city', 'City')],
         default='city'
     )  # Location type (country, state, city)
-    country_code = models.CharField(max_length=2)  # ISO country code
-    state_abbr = models.CharField(max_length=3, null=True, blank=True)  # State abbreviation
-    city = models.CharField(max_length=30, null=True, blank=True)  # City name
-    created_at = models.DateTimeField(auto_now_add=True)  # Creation timestamp
-    updated_at = models.DateTimeField(auto_now=True)  # Last update timestamp
+    country_code = models.CharField(max_length=2)  
+    state_abbr = models.CharField(max_length=3, null=True, blank=True)  
+    city = models.CharField(max_length=30, null=True, blank=True)  
+    created_at = models.DateTimeField(auto_now_add=True)  
+    updated_at = models.DateTimeField(auto_now=True)  
 
     class Meta:
         verbose_name = "Location"
@@ -40,10 +38,7 @@ class Location(models.Model):
         return f"{self.title} ({self.location_type})"
 
 def validate_amenities(value):
-    """
-    Custom validator to ensure each amenity in the JSON array is a string
-    with a maximum length of 100 characters.
-    """
+   
     if not isinstance(value, list):
         raise ValidationError("Amenities must be a list of strings.")
     for amenity in value:
@@ -53,30 +48,26 @@ def validate_amenities(value):
             raise ValidationError(f"Amenity '{amenity}' exceeds 100 characters.")
 
 class Accommodation(models.Model):
-    """
-    Accommodation model to store details of various properties.
-    """
-    id = models.CharField(max_length=20, primary_key=True)  # String ID with max length of 20
-    feed = models.PositiveSmallIntegerField(default=0)  # Feed number, unsigned small integer
-    title = models.CharField(max_length=100)  # Name of the accommodation
-    country_code = models.CharField(max_length=2)  # ISO country code
-    bedroom_count = models.PositiveIntegerField()  # Number of bedrooms
-    review_score = models.DecimalField(max_digits=3, decimal_places=1, default=0)  # Review score (1 decimal place)
-    usd_rate = models.DecimalField(max_digits=10, decimal_places=2)  # Price rate in USD
-    center = geomodels.PointField()  # Geolocation field
-    # images = models.JSONField(null=True, blank=True)  # Array of image URLs
-    location = models.ForeignKey('properties.Location', on_delete=models.CASCADE, related_name="accommodations")  # ForeignKey to Location
+    
+    id = models.CharField(max_length=20, primary_key=True)  
+    feed = models.PositiveSmallIntegerField(default=0)  
+    title = models.CharField(max_length=100)  
+    country_code = models.CharField(max_length=2)  
+    bedroom_count = models.PositiveIntegerField()  
+    review_score = models.DecimalField(max_digits=3, decimal_places=1, default=0)  
+    usd_rate = models.DecimalField(max_digits=10, decimal_places=2)  
+    center = geomodels.PointField()  
+    location = models.ForeignKey('properties.Location', on_delete=models.CASCADE, related_name="accommodations")  
 
-    # JSONB Array of Amenities
     amenities = models.JSONField(
         null=True, 
         blank=True, 
         validators=[validate_amenities]
     )
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  # ForeignKey to Django's auth_user
-    published = models.BooleanField(default=False)  # Boolean to indicate if the accommodation is published
-    created_at = models.DateTimeField(auto_now_add=True)  # Creation timestamp
-    updated_at = models.DateTimeField(auto_now=True)  # Last update timestamp
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  
+    published = models.BooleanField(default=False)  
+    created_at = models.DateTimeField(auto_now_add=True)  
+    updated_at = models.DateTimeField(auto_now=True)  
 
     class Meta:
         verbose_name = "Accommodation"
@@ -86,10 +77,7 @@ class Accommodation(models.Model):
         return f"{self.title} - {self.location.title}"
 
 def upload_accommodation_image(instance, filename):
-    """
-    Custom upload handler for accommodation images.
-    Renames the file to a slugified version with a unique identifier.
-    """
+   
     ext = os.path.splitext(filename)[1].lower()
     unique_id = uuid4().hex[:8]
     slugified_name = slugify(os.path.splitext(filename)[0])
@@ -98,27 +86,26 @@ def upload_accommodation_image(instance, filename):
     upload_path = f"accommodations/{instance.accommodation.id}/images/"
     return os.path.join(upload_path, new_filename)
 
+
 class AccommodationImage(models.Model):
     accommodation = models.ForeignKey(
         Accommodation,
         on_delete=models.CASCADE,
         related_name='accommodation_images'
     )
-    image = models.ImageField(upload_to=upload_accommodation_image)  # Use custom upload function
+    image = models.ImageField(upload_to=upload_accommodation_image)  
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Image for {self.accommodation.title}"
 
 class LocalizeAccommodation(models.Model):
-    """
-    Localized details for Accommodation, supporting multiple languages.
-    """
+    
     id = models.AutoField(primary_key=True)
     accommodation = models.ForeignKey('Accommodation', on_delete=models.CASCADE, related_name='localized')
-    language = models.CharField(max_length=2)  # Language code (ISO 639-1, e.g., 'en', 'ar')
-    description = models.TextField()  # Localized description
-    policy = models.JSONField(null=True, blank=True)  # JSON field for policies
+    language = models.CharField(max_length=2)  
+    description = models.TextField()  
+    policy = models.JSONField(null=True, blank=True)  
 
     class Meta:
         unique_together = ('accommodation', 'language')

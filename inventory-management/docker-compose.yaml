@@ -1,8 +1,7 @@
 services:
   postgres:
     image: postgis/postgis:latest
-    container_name: postgres_db_1
-    
+    container_name: postgres_db_100    
     environment:
       POSTGRES_USER: siam         # Define your database username
       POSTGRES_PASSWORD: siam@123 # Define your password

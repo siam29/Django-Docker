@@ -2,20 +2,21 @@ from django.http import HttpResponse
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from .forms import SignUpForm
+from django.contrib import messages
+from .forms import CustomUserRegistrationForm
 
 def home(request):
-    return HttpResponse("Welcome to the Home Page!")
+    return HttpResponse("Hello")
+
 
 def signup(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
+        form = CustomUserRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('signup_success')
+            messages.success(request, 'Your account has been created! You are now a Property Owner.')
+            return redirect('home')  # Redirect to the login page
     else:
-        form = SignUpForm()
-    return render(request, 'signup.html', {'form': form})
+        form = CustomUserRegistrationForm()
 
-def signup_success(request):
-    return render(request, 'signup_success.html')
+    return render(request, 'signup.html', {'form': form})
