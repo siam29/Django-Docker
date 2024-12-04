@@ -1,12 +1,25 @@
 from django.contrib import admin
 from leaflet.admin import LeafletGeoAdmin
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 from .models import Location, Accommodation, AccommodationImage, LocalizeAccommodation
 
+# Define a resource class for the Location model (required for import/export)
+class LocationResource(resources.ModelResource):
+    class Meta:
+        model = Location
+        fields = ('id', 'title', 'country_code', 'location_type', 'state_abbr', 'city', 'center')  # Adjust based on your fields
+        import_id_fields = ['id']  # Ensure that 'id' is used as the import ID
+
+# Register the Location model with import-export functionality
 @admin.register(Location)
-class LocationAdmin(LeafletGeoAdmin):
+class LocationAdmin(ImportExportModelAdmin, LeafletGeoAdmin):
     list_display = ('id', 'title', 'location_type', 'country_code', 'state_abbr', 'city')
     search_fields = ('title', 'country_code', 'state_abbr', 'city')
     list_filter = ('location_type', 'country_code')
+
+    # Use the resource class for import/export
+    resource_class = LocationResource
 
 class AccommodationImageInline(admin.TabularInline):
     """
@@ -92,5 +105,3 @@ class LocalizeAccommodationAdmin(admin.ModelAdmin):
     list_display = ('id', 'accommodation', 'language', 'description')
     list_filter = ('language',)
     search_fields = ('description', 'language')
-
-

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'properties',
     'django.contrib.gis',
     'leaflet',
+    'import_export',
 ]
 
 # Custom User Groups and Permissions Settings
