@@ -1,11 +1,13 @@
 from django.db import models
-from django.contrib.gis.db import models as geomodels  # For spatial fields
+from django.contrib.gis.db import models as geomodels 
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 from django.utils.text import slugify
 from uuid import uuid4
 import os
+from django.core.exceptions import ValidationError
+
 
 class Location(models.Model):
     
@@ -48,7 +50,6 @@ def validate_amenities(value):
             raise ValidationError(f"Amenity '{amenity}' exceeds 100 characters.")
 
 class Accommodation(models.Model):
-    
     id = models.CharField(max_length=20, primary_key=True)  
     feed = models.PositiveSmallIntegerField(default=0)  
     title = models.CharField(max_length=100)  
@@ -61,8 +62,7 @@ class Accommodation(models.Model):
 
     amenities = models.JSONField(
         null=True, 
-        blank=True, 
-        validators=[validate_amenities]
+        blank=True
     )
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  
     published = models.BooleanField(default=False)  
@@ -75,6 +75,10 @@ class Accommodation(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.location.title}"
+
+    def clean(self):
+        if self.review_score < 1 or self.review_score > 5:
+            raise ValidationError("Review score must be between 1 and 5.")
 
 def upload_accommodation_image(instance, filename):
    

@@ -92,3 +92,5 @@ class LocalizeAccommodationAdmin(admin.ModelAdmin):
     list_display = ('id', 'accommodation', 'language', 'description')
     list_filter = ('language',)
     search_fields = ('description', 'language')
+
+
