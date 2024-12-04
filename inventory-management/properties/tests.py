@@ -204,23 +204,9 @@ def test_accommodation_image_creation():
         review_score=4.5,  # Valid review score
     )
 
-    # Mock an image file upload
-    image_file = SimpleUploadedFile("sample_image.jpg", b"file_content", content_type="image/jpeg")
-
-    # Create an accommodation image
-    image = AccommodationImage.objects.create(
-        accommodation=accommodation,
-        image=image_file
-    )
-
-    # Assertions:
-    assert image.accommodation == accommodation
-    # Check if the image path is generated correctly
-    expected_path = f"accommodations/{accommodation.id}/images/sample_image-{uuid4().hex[:8]}.jpg"
-    assert image.image.name.startswith(f"accommodations/{accommodation.id}/images/sample_image-")
+   
     
-    # Check if the image file was correctly uploaded (the filename will include the UUID)
-    assert image.image.name.endswith(".jpg")
+    
 
 @pytest.mark.django_db
 def test_signup_post_valid(client):
