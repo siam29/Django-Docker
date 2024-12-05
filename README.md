@@ -15,9 +15,10 @@ An efficient and scalable inventory management system built with Django. It supp
 5. [Running the Project](#running-the-project)
    - [Run Server](#run-server)
    - [Run Tests](#run-tests)
+   - [Sitemap Generator](#sitemap-generate)
 
 7. [Contributing](#contributing)
-8. [License](#license)
+8. [Connect with Me](#connect-with-me)
 
 
 
@@ -176,7 +177,7 @@ Once logged in as an ```admin```, you can mark other users as ```Active```, ```S
 
 ### Property Owners Creation
 click on ```Groups``` table and create a ```Property Owners``` group and gave this four permission showing in the image below and click the save button.
-[![Alt text](property_owner.png)]
+![Alt text](property_owner.png)
 
 ### Test this project
 To run tests with coverage, use ```pytest```
@@ -192,3 +193,7 @@ docker-compose exec web python manage.py generate_sitemap
 ## Contributing
 Contributions are welcome! Please fork the repository and submit a pull request for any bug fixes or feature requests.
 
+## Connect with Me
+If you have any questions, suggestions, or feedback, feel free to reach out to me through the following channels
+- Email: almahmudsiam15@gmail.com
+- GitHub: https://github.com/siam29
