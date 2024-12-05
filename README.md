@@ -131,8 +131,7 @@ docker ps
 #### 9. Create superuser
 To access the Django admin panel, need to create a superuser. Run the following command to enter the Docker container and create the superuser:
 ```
-docker exec -it inventoryManagement bash
-python manage.py createsuperuser
+docker exec -it inventoryManagement python manage.py createsuperuser
 ```
 Then show this messege. Fill up this carefully and remember the password 
 
