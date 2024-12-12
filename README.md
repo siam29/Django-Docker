@@ -128,7 +128,25 @@ docker-compose up
 docker ps
 ```
 ```Hint:``` This will show you the currently running containers and their status.
-#### 9. Create superuser
+
+
+#### 9. Make Migrations
+To apply database changes, run the following command to create migration files:
+```
+docker exec -it inventoryManagement python manage.py makemigrations
+```
+#### 10. Apply Migrations
+Apply the migrations to update the database schema:
+```
+docker exec -it inventoryManagement python manage.py migrate
+```
+
+#### 11. Check the Status of Migrations
+To check which migrations have been applied:
+```
+docker exec -it inventoryManagement python manage.py showmigrations
+```
+#### 12. Create superuser
 To access the Django admin panel, need to create a superuser. Run the following command to enter the Docker container and create the superuser:
 ```
 docker exec -it inventoryManagement python manage.py createsuperuser
@@ -145,29 +163,8 @@ Then show this messege. Fill up this carefully and remember the password
 - Superuser created successfully.
 
 After completing these steps, you will have a superuser created for your Django application. You can log into the Django admin panel by going to:
-
-#### 10. Make Migrations
-To apply database changes, run the following command to create migration files:
-```
-docker exec -it inventoryManagement python manage.py makemigrations
-```
-#### 11. Apply Migrations
-Apply the migrations to update the database schema:
-```
-docker exec -it inventoryManagement python manage.py migrate
-```
-
-#### 12. Check the Status of Migrations
-To check which migrations have been applied:
-```
-docker exec -it inventoryManagement python manage.py showmigrations
-```
-
 ## Run this project
-Go to the url and paste this command for registration a user
-```
-http://localhost:8000/signup/
-```
+
 Paste this url for the admin before create the superuser username and password now enter this for sign in admin.
 ```
 http://localhost:8000/admin/
@@ -177,7 +174,10 @@ Once logged in as an ```admin```, you can mark other users as ```Active```, ```S
 ### Property Owners Creation
 click on ```Groups``` table and create a ```Property Owners``` group and gave this four permission showing in the image below and click the save button.
 ![Alt text](property_owner.png)
-
+Go to the url and paste this command for registration a user
+```
+http://localhost:8000/signup/
+```
 ### Test this project
 To run tests with coverage, use ```pytest```
 ```
